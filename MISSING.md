@@ -76,13 +76,6 @@ Electron DMG. It needs updating once Wails releases exist.
 - **Code comments**: some comments in `client/src/i18n.ts` still mention the
   Electron store or IPC.
 - **CHANGELOG**: it has no entry for the migration yet.
-- **Version bumps**: `npm version` runs `scripts/sync-version.js`, which still
-  writes the deleted `src/version.ts`. The version now lives in `package.json`,
-  `server/main.go` (`appVersion`), `build/config.yml` and the generated files
-  under `build/` (plists, Windows manifests and installer files, nfpm.yaml);
-  `wails3 task common:update:build-assets` regenerates the latter from
-  `build/config.yml`, but Wails warns it overwrites changes made under `build/`,
-  so check the diff afterwards.
 - **DMG artwork**: the DMG has no background image or file icon (both are
   optional); see "DMG appearance" in [DEVELOPMENT.md](DEVELOPMENT.md).
 - **Separate data folder**: the app uses `storytel-player-wails/` and copies the

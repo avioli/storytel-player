@@ -15,7 +15,8 @@
     "test": "cd server && go test ./...",
     "install-all": "cd client && npm install",
     "test:smoke": "cd server && go test -tags smoke -run Smoke -v .",
-    "version": "node scripts/sync-version.js && conventional-changelog -p angular -i CHANGELOG.md && git add README.md CHANGELOG.md src/version.ts"
+    "version": "node scripts/sync-version.mjs && conventional-changelog -p angular -i CHANGELOG.md && git add -A README.md CHANGELOG.md server/main.go build",
+    "version:check": "node scripts/sync-version.mjs --check"
   },
   "author": "debba <andrea@debbaweb.it>",
   "license": "MIT",

@@ -99,9 +99,21 @@ notarization (`darwin:sign`, `darwin:sign:notarize`) are not set up yet; see
 [MISSING.md](MISSING.md), which also covers the CI workflows, Windows, Linux,
 AUR and Homebrew.
 
-Before a release, bump the version. It lives in `package.json`,
-`server/main.go` (`appVersion`), `build/config.yml` and the files generated
-from it under `build/`; `npm version` does not handle this yet.
+### Version
+
+`package.json` holds the version. Bump it with npm, which also updates every
+other file that repeats it and the CHANGELOG, then commits and tags:
+
+```bash
+npm version 1.5.0     # or: patch, minor, major
+```
+
+`scripts/sync-version.mjs` does the copying: `server/main.go` (`appVersion`),
+`build/config.yml`, the macOS plists, the Windows manifests and installer
+files, `nfpm.yaml` and the README download links. `npm run version:check`
+fails if any of them differs from `package.json`, so CI can catch a manual
+edit. Avoid `wails3 task common:update:build-assets` for this: it regenerates
+the files under `build/` from `build/config.yml` and drops local changes.
 
 ### DMG appearance
 
