@@ -19,5 +19,6 @@ server/frontend
 
 # Wails build config and packaging assets (overrides a global build/* ignore)
 !/build/*
+/build/**/.DS_Store
 # Task cache
 .task/
