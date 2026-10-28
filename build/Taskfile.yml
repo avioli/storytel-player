@@ -47,16 +47,18 @@ tasks:
       - npm run build -q
 
   generate:icons:
-    summary: Generates the macOS `.icns` and Windows `.ico` from build/appicon.png
+    summary: Generates the Windows `.ico` from build/appicon.png
     run: once
     dir: '{{.ROOT_DIR}}/build'
     sources:
       - "appicon.png"
     generates:
-      - "darwin/icons.icns"
       - "windows/icon.ico"
     cmds:
-      - wails3 generate icons -input appicon.png -macfilename darwin/icons.icns -windowsfilename windows/icon.ico
+      # The macOS icon is committed and made by scripts/make-macos-icon.sh
+      # (squircle, margin, shadow). Wails would write a plain square, so its
+      # macOS output goes to the ignored task cache instead.
+      - wails3 generate icons -input appicon.png -macfilename ../.task/wails-icons.icns -windowsfilename windows/icon.ico
 
   dev:frontend:
     summary: Runs the Vite dev server for `wails3 dev`

@@ -115,6 +115,31 @@ fails if any of them differs from `package.json`, so CI can catch a manual
 edit. Avoid `wails3 task common:update:build-assets` for this: it regenerates
 the files under `build/` from `build/config.yml` and drops local changes.
 
+### App icon
+
+The macOS icon comes from an Icon Composer document,
+`build/darwin/AppIcon.icon`: the Storytel glyph (`Assets/glyph.png`) over a
+solid fill, with the glass settings in `icon.json`. Open it in Icon Composer
+(bundled with Xcode 26) to change it, then run:
+
+```bash
+scripts/make-macos-icon.sh
+```
+
+It needs Xcode 26 or later and ImageMagick 7, and writes two committed files,
+so the build itself does not need either tool:
+
+- `build/darwin/Assets.car`, compiled by `actool`. macOS 26 and later draw
+  the icon from it (`CFBundleIconName` in the plists).
+- `build/darwin/icons.icns` for older macOS. `ictool` renders the icon in
+  Apple's shape, and the script adds the margin and drop shadow that macOS
+  icons carry in the image itself, on Apple's 1024 px grid.
+
+`build/appicon.png` is still the source of the Windows `.ico`, and
+`server/assets/icon.png` the window icon on Windows and Linux. The glyph was
+cut out of the 512 px `appicon.png`; a vector or larger original would be
+sharper.
+
 ### DMG appearance
 
 A DMG can carry three images, all optional and all separate from the app's own

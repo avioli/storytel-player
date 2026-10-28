@@ -250,7 +250,12 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	icon, _ := assetFS.ReadFile("assets/icon.png")
+	// On macOS the bundle's icons.icns is the shaped app icon; setting Icon
+	// would replace it in the Dock with this square image at runtime.
+	var icon []byte
+	if runtime.GOOS != "darwin" {
+		icon, _ = assetFS.ReadFile("assets/icon.png")
+	}
 
 	a.app = application.New(application.Options{
 		Name:        "Storytel Player",
