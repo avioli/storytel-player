@@ -7,7 +7,7 @@
 [![Discord](https://img.shields.io/discord/1470772941296894128?color=5865F2&logo=discord&logoColor=white)](https://discord.gg/YrZPHAwMSG)
 ![i18n](https://img.shields.io/badge/i18n-EN%20|%20IT%20|%20DE%20|%20ES%20|%20FR%20|%20SV-blue)
 
-**Unoffical Storytel Player for Desktop** — a cross-platform desktop application for playing Storytel audiobooks, built with TypeScript, React, Fastify, and Electron.
+**Unoffical Storytel Player for Desktop** — a cross-platform desktop application for playing Storytel audiobooks, built with React, TypeScript, Go and [Wails](https://wails.io/).
 
 **Discord** - [Join our discord server](https://discord.gg/YrZPHAwMSG) and chat with the maintainers.
 
@@ -34,15 +34,13 @@ See the [CHANGELOG](CHANGELOG.md) for the full list of changes across all releas
 
 ✅ **Audio Player**: Chapters, bookmarks, playback speed, sleep timer, multiple audio tracks and automatic resume
 
-✅ **Session Management**: Secure authentication with persistent storage via electron-store, automatic session refresh and transparent retry
+✅ **Session Management**: Secure authentication with persistent local storage, automatic session refresh and transparent retry
 
 ✅ **Internationalization**: English, Italian, German, Spanish, French, Swedish and Finnish (i18next) with automatic language detection
 
 ✅ **Cross-Platform**: Available for Windows, macOS (x64/ARM64), and Linux (x64/ARM64/ARMv7)
 
 ✅ **Action Logging**: Internal logging of HTTP requests, responses, and user actions, exportable for debugging. Log rotation is applied automatically (max 10 MB per file, up to 5 archived files)
-
-✅ **Development Mode**: Hot reload for both client and server during development
 
 ✅ **Offline Listening**: Download audiobooks for offline playback
 
@@ -51,23 +49,28 @@ See the [CHANGELOG](CHANGELOG.md) for the full list of changes across all releas
 
 ## Architecture
 
-The application is built with TypeScript and follows a modular architecture:
+The app is a single native binary built with Wails 3. It uses the operating
+system's webview (WKWebView on macOS, WebView2 on Windows, WebKitGTK on Linux)
+instead of bundling Chromium and Node, so the macOS app is about 11 MB.
 
-- **Frontend**: React 18 with TypeScript, Tailwind CSS, and Vite (port 3000 in dev mode)
-- **Backend**: Fastify server with TypeScript and RESTful API (port 8080)
-- **Desktop**: Electron 43 with TypeScript
-  - Window Manager: Main window handling with development/production modes
-  - Tray Manager: System tray integration
-  - Server Manager: Embedded Fastify server management
-  - IPC Manager: Inter-process communication between Electron and React
-- **Authentication**: Session-based authentication with secure storage
-- **Audio Streaming**: Direct integration with Storytel's streaming API
-- **Logging**: In-memory and file-based (app.log in the config directory) logging of system events and HTTP traffic
+- **Frontend** (`client/`): React 18, TypeScript, Tailwind CSS and Vite
+- **Backend** (`server/`): a Go module that is both the desktop shell and the API
+  - `main.go`: window, system tray, single instance lock, `/native/*` bridge
+  - `api.go`: the `/api/*` routes (auth, bookshelf, streaming, downloads, logs)
+  - `storytel.go`: the Storytel API client
+  - `store.go`, `i18n.go`, `logger.go`: settings, tray translations, action log
+- **No network port**: the React app calls `/api/*` and `/native/*` on its own
+  origin; Wails routes those requests straight to the Go handlers in-process
+- **Audio Streaming**: Storytel's signed CDN URLs, or local downloads served
+  with HTTP Range support
+- **Logging**: `app.log` in the config directory, with HTTP traffic and user actions
 
 ## Prerequisites
 
-- Node.js 22+ (see `.nvmrc` for the recommended version)
-- npm 7+
+- Go 1.26+
+- Node.js 22+ and npm (to build the frontend; see `.nvmrc`)
+- Platform webview dependencies, see the
+  [Wails installation guide](https://v3.wails.io/getting-started/installation/)
 
 ## Installation
 
@@ -111,149 +114,72 @@ yay -S storytel-player-bin
 
 ## Updates
 
-### Automatic Updates
-
-Storytel Player checks for updates automatically on startup. When a new version is available, a notification will appear, allowing you to download and install the update seamlessly.
-
-### Manual Updates
-
-You can also manually check for updates or download the latest version directly from the [Releases page](https://github.com/debba/storytel-player/releases).
-```
+The Wails build does not have an auto-updater yet. Download new versions from
+the [Releases page](https://github.com/debba/storytel-player/releases).
 
 ## Development
 
-Start the development environment with hot reload:
-
 ```bash
-npm run install-all
-npm run dev
+npm run install-all   # install frontend dependencies
+npm run dev           # build the frontend, then run the app with `go run`
 ```
 
-This will:
-- Start the Fastify server on port 3001 (with tsx watch for auto-restart)
-- Start the Vite development server on port 3000
-- Both servers will reload automatically when files change
-
-### Individual Components
-
-You can also run components separately:
-
-```bash
-# Start only the server (development mode)
-npm run server:dev
-
-# Start only the client
-npm run client
-
-# Start both (without hot reload)
-npm start
-```
-
-### Electron Development
-
-To run the Electron app in development mode:
-
-```bash
-npm run electron:dev
-```
+There is no hot reload yet: rerun `npm run dev` after changes. To work on the UI
+alone, `npm run client` starts the Vite dev server on port 3000, but it needs a
+backend on `VITE_BACKEND_API_URL` (see `client/.env`).
 
 ## Building
 
-### Build for Production
-
-Build all components for production:
-
 ```bash
-npm run build
+npm run dist:mac      # macOS: build/bin/Storytel Player.app (ad-hoc signed)
 ```
 
-This command builds the React client with Vite (`client/build/`).
+The frontend is built into `server/frontend/` and embedded into the Go binary,
+together with `server/locales/` and `server/assets/`. Windows and Linux
+packaging are not set up yet (see [MISSING.md](MISSING.md)).
 
-### Build Electron App
-
-Create distributable Electron packages:
+## Testing
 
 ```bash
-# Build and create installer/distributable for current platform
-npm run electron:dist
-
-# Platform-specific builds
-npm run electron:dist:win           # Windows (x64)
-npm run electron:dist:mac:x64       # macOS (Intel)
-npm run electron:dist:mac:arm64     # macOS (Apple Silicon)
-npm run electron:dist:linux         # Linux (all targets)
-npm run electron:dist:linux:x64     # Linux x64 (tar.gz, deb, rpm, AppImage)
-npm run electron:dist:linux:arm64   # Linux ARM64
-npm run electron:dist:linux:arm     # Linux ARMv7
+npm test              # Go unit tests
+npm run test:smoke    # live Storytel requests with an existing login token
 ```
-
-The built applications will be available in the `dist/` directory.
-
-**Build targets:**
-- **Windows**: NSIS installer (.exe)
-- **macOS**: DMG package (.dmg)
-- **Linux**: AppImage, deb, rpm, Pacman packages
 
 ## Scripts
 
 | Command | Description |
 |---------|-------------|
-| `npm start` | Start both client and server (production mode) |
-| `npm run dev` | Start development servers with hot reload |
-| `npm run build` | Build client with Vite |
-| `npm run build-win` | Build client for Windows |
-| `npm run server:build` | Build server with esbuild |
-| `npm run install-all` | Install dependencies for all components |
-| `npm run clean` | Clean all build directories |
-| `npm run electron:build` | Compile Electron TypeScript files |
-| `npm run electron` | Run Electron app (production) |
-| `npm run electron:dev` | Run Electron app (development mode) |
-| `npm run electron:pack` | Package Electron app without installer |
-| `npm run electron:dist` | Build and create installer for current platform |
-| `npm run electron:dist:win` | Build Windows installer (x64) |
-| `npm run electron:dist:linux` | Build all Linux packages |
-| `npm run electron:dist:linux:x64` | Build Linux x64 packages |
-| `npm run electron:dist:linux:arm64` | Build Linux ARM64 packages |
-| `npm run electron:dist:linux:arm` | Build Linux ARMv7 packages |
-| `npm run electron:dist:mac:x64` | Build macOS Intel package |
-| `npm run electron:dist:mac:arm64` | Build macOS Apple Silicon package |
+| `npm run install-all` | Install frontend dependencies |
+| `npm run dev` | Build the frontend and run the app |
+| `npm run client` | Run the Vite dev server only |
+| `npm run build` | Build the frontend into `server/frontend/` |
+| `npm run dist:mac` | Build the macOS app bundle |
+| `npm test` | Run the Go unit tests |
+| `npm run test:smoke` | Run the live smoke test |
 
 ## Configuration
 
+### Data locations
+
+- Settings and login: `config.json` in `storytel-player-wails/` under the user
+  config directory (`~/Library/Application Support` on macOS). On first run it
+  is copied from the Electron build's `storytel-player/config.json`, so an
+  existing login carries over.
+- Downloads: `~/Downloads`, named `<title> [<bookId>].mp3`
+
 ### Environment Variables
 
-Create a `.env` file in the `server/` directory:
-
-```env
-# Add your environment variables here
-# See server/.env.example for reference
-```
-
-### Electron Builder
-
-Electron Builder configuration is in `package.json` under the `build` key:
-
-- **App ID**: `com.storytel.player`
-- **Product Name**: `Storytel Player`
-- **Output Directory**: `dist/`
-
-## Development Notes
-
-- The Electron app features a compact UI (480x800 window size) optimized for desktop use
-- Single instance lock prevents multiple app instances from running simultaneously
-- In development mode, the app connects to local dev servers (React on port 3000, Fastify on port 3001)
-- In production mode, the app serves static files from `client/build/` and runs the bundled server
-- The embedded Fastify server is managed by the Electron main process
-- TypeScript is used throughout the project (Electron, React, and Fastify)
-- Certificate errors are ignored in development mode for local HTTPS testing
+- `JWT_SECRET`: secret for the app's session tokens (defaults to the same value
+  the Electron build used, which keeps old logins valid)
+- `IS_DEBUG=true`: enable the webview developer tools
+- `APP_LOCALE`: fallback UI language when the OS languages are not supported
+- `DEVICE_ID`: fixed device id sent with position syncs
 
 ## Technologies Used
 
 - **Frontend**: React 18, TypeScript, Tailwind CSS, Vite, i18next, Axios
-- **Backend**: Fastify 5, TypeScript, @fastify/cors, dotenv
-- **Desktop**: Electron 38+, electron-store
-- **Build Tools**: Vite, esbuild, electron-builder, TypeScript compiler
-- **Development**: Concurrently, tsx (for server watch mode)
+- **Backend and desktop**: Go, Wails 3
+- **Build Tools**: Vite, Go toolchain
 
 ## 🌐 Website
 Visit our [official documentation](https://debba.github.io/storytel-player/)

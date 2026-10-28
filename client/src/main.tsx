@@ -1,3 +1,5 @@
+// Must run before anything reads the window.* bridges.
+import './platform/wails';
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';

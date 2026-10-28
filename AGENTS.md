@@ -2,37 +2,39 @@
 
 ## Project Overview
 
-**Storytel Player** is an unofficial cross-platform desktop application for playing Storytel audiobooks, built with TypeScript, React, Fastify, and Electron.
+**Storytel Player** is an unofficial cross-platform desktop application for playing Storytel audiobooks, built with a React + TypeScript frontend and a Go backend on Wails 3.
 
 ### Tech Stack
 - **Frontend**: React 18 + TypeScript + Tailwind CSS + Vite
-- **Backend**: Fastify 5 + TypeScript
-- **Desktop**: Electron 43
+- **Backend**: Go (stdlib `net/http`), served in-process
+- **Desktop**: Wails 3 (system webview: WKWebView / WebView2 / WebKitGTK)
 - **Internationalization**: i18next (multi-language support)
-- **State Management**: electron-store for persistent storage
-- **Build Tools**: Vite, esbuild, electron-builder
+- **State Management**: JSON store in the user config dir (`server/store.go`)
+- **Build Tools**: Vite, Go toolchain, `scripts/build-mac.sh`
 
 ### Architecture
 ```
 storytel-player/
-├── client/          # React frontend application
-│   ├── src/
-│   │   ├── components/  # React components
-│   │   ├── hooks/       # Custom React hooks
-│   │   ├── services/    # API services
-│   │   ├── utils/       # Utility functions
-│   │   └── i18n.ts      # i18next configuration
-│   └── package.json
-├── server/          # Fastify backend server
-│   ├── server.ts        # Main server file
-│   ├── storytelApi.ts   # Storytel API integration
-│   ├── locales/         # Translation files
-│   └── package.json
-├── src/             # Electron main process
-│   ├── modules/         # Electron modules (IPC, window, tray, etc.)
-│   ├── main.ts          # Electron entry point
-│   └── preload.ts       # Electron preload script
-└── package.json     # Root package.json
+|-- client/          # React frontend application
+|   |-- src/
+|   |   |-- components/  # React components
+|   |   |-- hooks/       # Custom React hooks
+|   |   |-- services/    # API services
+|   |   |-- utils/       # Utility functions
+|   |   `-- i18n.ts      # i18next configuration
+|   `-- package.json
+|-- server/          # Go module: Wails desktop app + backend
+|   |-- main.go          # Wails entry: window, tray, /native/* bridge
+|   |-- api.go           # /api/* routes (auth, bookshelf, stream, downloads)
+|   |-- storytel.go      # Storytel API client
+|   |-- store.go         # Persistent JSON settings store
+|   |-- i18n.go          # Language negotiation, tray translations
+|   |-- logger.go        # app.log action/HTTP log
+|   |-- locales/         # Translation files (embedded)
+|   |-- assets/          # App and tray icons (embedded)
+|   `-- frontend/        # Vite build output (generated, gitignored)
+|-- scripts/         # build-mac.sh and release helpers
+`-- package.json     # Root package.json (npm script shortcuts)
 ```
 
 ## Development Guidelines
@@ -78,17 +80,16 @@ storytel-player/
   3. Use the key in your component with `t('your.new.key')`
 
 - **Adding a New Language**: the supported-language list exists once per build
-  target, because the renderer (Vite), the Electron main process (tsc) and the
-  server (esbuild) do not share a module graph. Update all four in lockstep:
-  1. `server/locales/<code>.json` — full key parity with `en.json`
-  2. `server/fastify-common.ts` — add the loader to `LOCALE_LOADERS`
-  3. `client/src/config/languages.ts` — add code + endonym to `APP_LANGUAGES`
-  4. `src/i18n/languages.ts` — add the code to `SUPPORTED_LANGUAGES`
+  target, because the renderer (TypeScript) and the backend (Go) do not share
+  code. Update all three in lockstep:
+  1. `server/locales/<code>.json` - full key parity with `en.json`
+  2. `server/i18n.go` - add the code to `supportedLanguages`
+  3. `client/src/config/languages.ts` - add code + endonym to `APP_LANGUAGES`
 
 - **UI Language vs. Catalog Language**: they are unrelated and must not be
   conflated. The UI language is the user's own choice (or their OS locale);
   which books exist, and in which languages, is decided by the country of the
-  logged-in Storytel account. Never derive one from the other — a `sv-FI`
+  logged-in Storytel account. Never derive one from the other - a `sv-FI`
   system locale means "Swedish speaker in Finland", not "Finnish catalog".
   Language *names* shown in the UI are produced locally with
   `Intl.DisplayNames` (see `localizedLanguageName` in `client/src/utils/helpers.ts`);
@@ -112,20 +113,21 @@ storytel-player/
 ### State Management
 
 - **Local State**: React hooks (useState, useEffect, etc.)
-- **Persistent Storage**: Use `electron-store` via IPC for desktop persistence
+- **Persistent Storage**: Use `client/src/utils/storage.ts` (backed by `/native/store/*` in the desktop app)
 - **API State**: Direct API calls via Axios (see `client/src/utils/api.ts`)
 
 ### Development Workflow
 
-1. **Install dependencies**: `npm run install-all`
-2. **Development mode**: `npm run dev` (runs both client and server with hot reload)
-3. **Electron dev**: `npm run electron:dev`
-4. **Build**: `npm run build` (builds client and server)
-5. **Electron distribution**: `npm run electron:dist` (creates distributable packages)
+1. **Install dependencies**: `npm run install-all` (plus Go 1.26+)
+2. **Run the app**: `npm run dev` (builds the client, then `go run` in `server/`)
+3. **Build the client only**: `npm run build` (outputs to `server/frontend/`)
+4. **macOS app bundle**: `npm run dist:mac` (outputs `build/bin/Storytel Player.app`)
+5. **Tests**: `npm test` (Go unit tests), `npm run test:smoke` (live Storytel, needs a login)
 
 ### Testing Strategy
 
-- Manual testing in development mode
+- Go unit tests (`npm test`) and a live smoke test (`npm run test:smoke`)
+- Manual testing of the app
 - Test across platforms (Windows, macOS, Linux)
 - Verify i18n translations for all supported languages
 - Test both online and offline modes
@@ -145,20 +147,22 @@ storytel-player/
 
 ### API Integration
 - Backend API calls go through `client/src/utils/api.ts`
-- Storytel API integration is in `server/storytelApi.ts`
+- Storytel API integration is in `server/storytel.go`; routes are in `server/api.go`
 - Handle errors gracefully with user feedback
 
-### IPC Communication
-- Electron IPC handlers are in `src/modules/ipc.ts`
-- Frontend uses `window.electron` API (typed in `client/src/types/window.d.ts`)
+### Native Bridge
+- Desktop-only calls (store, locale, window, tray, logs) are `/native/*` routes in `server/main.go`
+- `client/src/platform/wails.ts` exposes them as the `window.electron*` / `window.trayControls`
+  objects the components use (names kept from the Electron era; typed in `client/src/types/window.d.ts`)
+- Go -> renderer events are DOM `CustomEvent`s named `native:<name>`
 - Always handle both success and error cases
 
 ## Important Notes
 
 - **Security**: This is a desktop app with persistent session storage
-- **Authentication**: Session-based with secure storage via electron-store
+- **Authentication**: HS256 token (`server/api.go`) kept in the JSON store
 - **Single Instance**: App uses single instance lock (one app instance at a time)
-- **Updates**: Electron updater is integrated for auto-updates
+- **Updates**: no auto-updater yet (see MISSING.md)
 - **Offline Mode**: Support for downloading audiobooks for offline playback
 
 ## Git Repository

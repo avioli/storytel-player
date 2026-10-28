@@ -11,9 +11,8 @@
  *
  * When adding a language, update in lockstep:
  *   1. `server/locales/<code>.json`  (all keys, same shape as en.json)
- *   2. `server/fastify-common.ts`    (/api/translations)
- *   3. `src/i18n/languages.ts`       (Electron main process)
- *   4. this file
+ *   2. `server/i18n.go`              (`supportedLanguages`, Go backend + tray)
+ *   3. this file
  */
 
 export const AUTO_LANGUAGE = 'auto';

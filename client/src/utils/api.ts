@@ -1,4 +1,5 @@
 import storage from "./storage";
+import {isWails} from "../platform/wails";
 import axios, {AxiosInstance, AxiosRequestConfig} from "axios";
 
 declare global {
@@ -8,9 +9,11 @@ declare global {
 }
 
 const axiosApi = axios.create({
-    baseURL: `${import.meta.env.VITE_BACKEND_API_URL}/api`, // o la tua baseURL reale
+    baseURL: `${import.meta.env.VITE_BACKEND_API_URL ?? ""}/api`,
     withCredentials: true,
-    timeout: 30000
+    // Downloads hold the request open until the file is complete, so the
+    // desktop build (served in-process, like the old IPC path) has no timeout.
+    timeout: isWails ? 0 : 30000
 });
 
 axiosApi.interceptors.request.use(async (config) => {
