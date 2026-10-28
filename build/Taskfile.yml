@@ -1,0 +1,79 @@
+version: '3'
+
+# Shared tasks used by the platform Taskfiles. Trimmed from the Wails
+# template: npm only, no generated bindings (the frontend talks to Go over
+# /api and /native, see server/main.go), no Docker/server-mode/mobile tasks.
+
+tasks:
+  go:mod:tidy:
+    summary: Runs `go mod tidy`
+    internal: true
+    # Universal builds invoke this from parallel deps; two concurrent
+    # `go mod tidy` runs can corrupt go.mod.
+    run: once
+    dir: '{{.ROOT_DIR}}/{{.GO_DIR}}'
+    cmds:
+      - go mod tidy
+
+  install:frontend:deps:
+    summary: Install frontend dependencies
+    run: once
+    dir: '{{.ROOT_DIR}}/{{.FRONTEND_DIR}}'
+    sources:
+      - package.json
+      - package-lock.json
+    generates:
+      - node_modules
+    preconditions:
+      - sh: npm version
+        msg: "Looks like npm isn't installed. Npm is part of the Node installer: https://nodejs.org/en/download/"
+    cmds:
+      - npm install --no-audit --no-fund
+
+  build:frontend:
+    summary: Builds the frontend into server/frontend, which the Go binary embeds
+    # Also run for dev builds: //go:embed needs server/frontend to exist even
+    # though `wails3 dev` serves the UI from the Vite dev server.
+    run: once
+    dir: '{{.ROOT_DIR}}/{{.FRONTEND_DIR}}'
+    sources:
+      - "**/*"
+      - exclude: node_modules/**/*
+    generates:
+      - '{{.ROOT_DIR}}/{{.GO_DIR}}/frontend/**/*'
+    deps:
+      - task: install:frontend:deps
+    cmds:
+      - npm run build -q
+
+  generate:icons:
+    summary: Generates the macOS `.icns` and Windows `.ico` from build/appicon.png
+    run: once
+    dir: '{{.ROOT_DIR}}/build'
+    sources:
+      - "appicon.png"
+    generates:
+      - "darwin/icons.icns"
+      - "windows/icon.ico"
+    cmds:
+      - wails3 generate icons -input appicon.png -macfilename darwin/icons.icns -windowsfilename windows/icon.ico
+
+  dev:frontend:
+    summary: Runs the Vite dev server for `wails3 dev`
+    dir: '{{.ROOT_DIR}}/{{.FRONTEND_DIR}}'
+    deps:
+      - task: install:frontend:deps
+    cmds:
+      # Bind IPv4 explicitly: Wails proxies to 127.0.0.1, while "localhost"
+      # can resolve to ::1 only on macOS.
+      - npm run dev -- --host 127.0.0.1 --port {{.VITE_PORT}} --strictPort
+    env:
+      # `wails3 dev` starts this with stdin closed, and Vite shuts down when
+      # stdin ends unless CI=true.
+      CI: "true"
+
+  update:build-assets:
+    summary: Regenerates build assets (plists, installer files) from build/config.yml
+    dir: '{{.ROOT_DIR}}/build'
+    cmds:
+      - wails3 update build-assets -name "{{.APP_NAME}}" -binaryname "{{.APP_NAME}}" -config config.yml -dir .

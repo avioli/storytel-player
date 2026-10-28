@@ -27,12 +27,6 @@ the window, but cannot return values from `ExecJS` or read HttpOnly cookies.
 Options: Wails 3's updater support, or a GitHub releases check that only
 notifies.
 
-### Dev mode with hot reload
-
-`npm run dev` builds the frontend and runs `go run`, with no reload. The Wails
-CLI's `wails3 dev` (Vite dev server plus Go rebuild on change) needs a
-Taskfile setup that the project does not have yet.
-
 ## Packaging and release
 
 ### CI workflows
@@ -44,15 +38,20 @@ each platform runner.
 
 ### Signing and notarization (macOS)
 
-`scripts/build-mac.sh` only ad-hoc signs, which is enough for local use. A
-release build needs a Developer ID signature, hardened runtime, notarization
-and a DMG. `server/assets/entitlements.mac.plist` is kept for that, but
-nothing uses it yet.
+`wails3 package` only ad-hoc signs, which is enough for local use. A release
+build needs a Developer ID signature, hardened runtime and notarization; the
+Taskfile has `darwin:sign` and `darwin:sign:notarize` tasks for that (set up
+with `wails3 setup`), but they have not been tried.
+`server/assets/entitlements.mac.plist` is kept for that, but nothing uses
+it yet.
 
 ### Windows and Linux builds
 
-Not built or tested. Windows needs an NSIS or MSIX installer and the WebView2
-runtime; Linux needs WebKitGTK and packages (AppImage, deb, rpm, pacman). The
+The Wails template's tasks are in place (`build/windows`, `build/linux`: NSIS
+and MSIX installers, AppImage, deb, rpm, Arch) and point at `server/`, but
+nothing has been built or tested on those platforms. Docker cross-compilation
+from the template (`build:docker`) assumes the Go module at the repo root and
+will not work as-is. The
 code has no macOS-only paths except language detection in `i18n.go`, which
 falls back to `LANG` on other platforms.
 
@@ -65,7 +64,7 @@ bundled runtime).
 
 ### Homebrew cask
 
-The README points at `debba/homebrew-storytel-player`, which installs the
+INSTALL.md points at `debba/homebrew-storytel-player`, which installs the
 Electron DMG. It needs updating once Wails releases exist.
 
 ## Cleanup
@@ -77,6 +76,15 @@ Electron DMG. It needs updating once Wails releases exist.
 - **Code comments**: some comments in `client/src/i18n.ts` still mention the
   Electron store or IPC.
 - **CHANGELOG**: it has no entry for the migration yet.
+- **Version bumps**: `npm version` runs `scripts/sync-version.js`, which still
+  writes the deleted `src/version.ts`. The version now lives in `package.json`,
+  `server/main.go` (`appVersion`), `build/config.yml` and the generated files
+  under `build/` (plists, Windows manifests and installer files, nfpm.yaml);
+  `wails3 task common:update:build-assets` regenerates the latter from
+  `build/config.yml`, but Wails warns it overwrites changes made under `build/`,
+  so check the diff afterwards.
+- **DMG artwork**: the DMG has no background image or file icon (both are
+  optional); see "DMG appearance" in [DEVELOPMENT.md](DEVELOPMENT.md).
 - **Separate data folder**: the app uses `storytel-player-wails/` and copies the
   Electron `config.json` once. If Wails replaces Electron for good, it could
   use `storytel-player/` directly, but it must not run alongside an Electron

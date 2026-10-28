@@ -9,12 +9,12 @@
   },
   "homepage": "./",
   "scripts": {
-    "build": "cd client && npm run build",
-    "install-all": "cd client && npm install",
+    "dev": "wails3 dev",
+    "build": "wails3 build",
+    "package": "wails3 package",
     "test": "cd server && go test ./...",
+    "install-all": "cd client && npm install",
     "test:smoke": "cd server && go test -tags smoke -run Smoke -v .",
-    "dev": "npm run build && cd server && go run .",
-    "dist:mac": "scripts/build-mac.sh",
     "version": "node scripts/sync-version.js && conventional-changelog -p angular -i CHANGELOG.md && git add README.md CHANGELOG.md src/version.ts"
   },
   "author": "debba <andrea@debbaweb.it>",

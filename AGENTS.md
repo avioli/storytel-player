@@ -10,7 +10,7 @@
 - **Desktop**: Wails 3 (system webview: WKWebView / WebView2 / WebKitGTK)
 - **Internationalization**: i18next (multi-language support)
 - **State Management**: JSON store in the user config dir (`server/store.go`)
-- **Build Tools**: Vite, Go toolchain, `scripts/build-mac.sh`
+- **Build Tools**: Vite, Go toolchain, Wails CLI (`Taskfile.yml` + `build/`)
 
 ### Architecture
 ```
@@ -33,7 +33,9 @@ storytel-player/
 |   |-- locales/         # Translation files (embedded)
 |   |-- assets/          # App and tray icons (embedded)
 |   `-- frontend/        # Vite build output (generated, gitignored)
-|-- scripts/         # build-mac.sh and release helpers
+|-- build/           # Wails build config (config.yml) and per-OS packaging
+|-- Taskfile.yml     # Wails tasks; FRONTEND_DIR/GO_DIR point at client/server
+|-- scripts/         # release helpers
 `-- package.json     # Root package.json (npm script shortcuts)
 ```
 
@@ -118,10 +120,11 @@ storytel-player/
 
 ### Development Workflow
 
-1. **Install dependencies**: `npm run install-all` (plus Go 1.26+)
-2. **Run the app**: `npm run dev` (builds the client, then `go run` in `server/`)
-3. **Build the client only**: `npm run build` (outputs to `server/frontend/`)
-4. **macOS app bundle**: `npm run dist:mac` (outputs `build/bin/Storytel Player.app`)
+1. **Install dependencies**: `npm run install-all`, plus Go 1.26+ and the
+   `wails3` CLI (`go install github.com/wailsapp/wails/v3/cmd/wails3@v3.0.0`)
+2. **Run with hot reload**: `wails3 dev` (Vite for `client/`, rebuild on `.go` changes)
+3. **Build**: `wails3 build` (binary in `bin/`)
+4. **Package**: `wails3 package` (outputs `bin/Storytel Player.app` on macOS)
 5. **Tests**: `npm test` (Go unit tests), `npm run test:smoke` (live Storytel, needs a login)
 
 ### Testing Strategy

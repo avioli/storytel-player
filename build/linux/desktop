@@ -1,0 +1,13 @@
+[Desktop Entry]
+Version=1.0
+Name=Storytel Player
+Comment=Storytel audiobook player for desktop
+# The Exec line includes %u to pass the URL to the application
+Exec=/usr/local/bin/storytel-player %u
+Terminal=false
+Type=Application
+Icon=storytel-player
+Categories=Utility;
+StartupWMClass=storytel-player
+
+ 

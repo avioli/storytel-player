@@ -1,0 +1,15 @@
+{
+	"fixed": {
+		"file_version": "1.4.1"
+	},
+	"info": {
+		"0409": {
+			"ProductVersion": "1.4.1",
+			"CompanyName": "debba",
+			"FileDescription": "Storytel audiobook player for desktop",
+			"LegalCopyright": "MIT License",
+			"ProductName": "Storytel Player",
+			"Comments": "Unofficial Storytel player"
+		}
+	}
+}

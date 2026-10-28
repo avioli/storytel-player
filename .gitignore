@@ -3,7 +3,7 @@ node_modules
 client/node_modules
 server/node_modules
 .env
-build
+/bin
 client/build
 dist
 server/dist
@@ -16,3 +16,8 @@ conversation*.md
 notes/
 .claude/
 server/frontend
+
+# Wails build config and packaging assets (overrides a global build/* ignore)
+!/build/*
+# Task cache
+.task/

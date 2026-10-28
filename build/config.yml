@@ -1,0 +1,75 @@
+# This file contains the configuration for this project.
+# When you update `info` or `fileAssociations`, run `wails3 task common:update:build-assets` to update the assets.
+# Note that this will overwrite any changes you have made to the assets.
+version: '3'
+
+# This information is used to generate the build assets.
+info:
+  companyName: "debba" # The name of the company
+  productName: "Storytel Player" # The name of the application
+  productIdentifier: "com.storytel.player.wails" # The unique product identifier
+  description: "Storytel audiobook player for desktop" # The application description
+  copyright: "MIT License" # Copyright text
+  comments: "Unofficial Storytel player" # Comments
+  version: "1.4.1" # The application version
+  # cfBundleIconName: "appicon" # The macOS icon name in Assets.car icon bundles (optional)
+  #                               # Should match the name of your .icon file without the extension
+  #                               # If not set and Assets.car exists, defaults to "appicon"
+
+# Dev mode configuration
+dev_mode:
+  root_path: .
+  log_level: warn
+  debounce: 1000
+  ignore:
+    dir:
+      - .git
+      - node_modules
+      - client        # served by the Vite dev server, which hot-reloads it
+      - frontend      # server/frontend, the embedded build output
+      - bin
+      - build
+      - docs
+    file:
+      - .DS_Store
+      - .gitignore
+      - .gitkeep
+      - "*_test.go"
+    watched_extension:
+      - "*.go"
+      - "*.json" # server/locales
+    git_ignore: true
+  executes:
+    - cmd: wails3 build DEV=true
+      type: blocking
+    - cmd: wails3 task common:dev:frontend
+      type: background
+      # The standard frontend task waits up to 60s for HTTP 200 from
+      # FRONTEND_DEVSERVER_URL before starting the app. Override if needed;
+      # custom background commands can opt in with the same readiness block.
+      # readiness:
+      #   http: "http://localhost:5173/"
+      #   timeout: "60s"
+      #   interval: "200ms"
+    - cmd: wails3 task run
+      type: primary
+      exit_policy: shutdown
+
+# File Associations
+# More information at: https://v3.wails.io/noit/done/yet
+fileAssociations:
+#  - ext: wails
+#    name: Wails
+#    description: Wails Application File
+#    iconName: wailsFileIcon
+#    role: Editor
+#  - ext: jpg
+#    name: JPEG
+#    description: Image File
+#    iconName: jpegFileIcon
+#    role: Editor
+#    mimeType: image/jpeg  # (optional)
+
+# Other data
+other:
+  - name: My Other Data

@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<MsixPackagingToolTemplate
+    xmlns="http://schemas.microsoft.com/msix/packaging/msixpackagingtool/template/2022">
+    <Settings
+        AllowTelemetry="false"
+        ApplyACLsToPackageFiles="true"
+        GenerateCommandLineFile="true"
+        AllowPromptForPassword="false">
+    </Settings>
+    <Installer
+        Path="storytel-player"
+        Arguments=""
+        InstallLocation="C:\Program Files\debba\Storytel Player">
+    </Installer>
+    <PackageInformation
+        PackageName="Storytel Player"
+        PackageDisplayName="Storytel Player"
+        PublisherName="CN=debba"
+        PublisherDisplayName="debba"
+        Version="1.4.1.0"
+        PackageDescription="Storytel audiobook player for desktop">
+        <Capabilities>
+            <Capability Name="runFullTrust" />
+            
+        </Capabilities>
+        <Applications>
+            <Application
+                Id="com.storytel.player.wails"
+                Description="Storytel audiobook player for desktop"
+                DisplayName="Storytel Player"
+                ExecutableName="storytel-player"
+                EntryPoint="Windows.FullTrustApplication">
+                
+            </Application>
+        </Applications>
+        <Resources>
+            <Resource Language="en-us" />
+        </Resources>
+        <Dependencies>
+            <TargetDeviceFamily Name="Windows.Desktop" MinVersion="10.0.17763.0" MaxVersionTested="10.0.19041.0" />
+        </Dependencies>
+        <Properties>
+            <Framework>false</Framework>
+            <DisplayName>Storytel Player</DisplayName>
+            <PublisherDisplayName>debba</PublisherDisplayName>
+            <Description>Storytel audiobook player for desktop</Description>
+            <Logo>Assets\AppIcon.png</Logo>
+        </Properties>
+    </PackageInformation>
+    <SaveLocation PackagePath="storytel-player.msix" />
+    <PackageIntegrity>
+        <CertificatePath></CertificatePath>
+    </PackageIntegrity>
+</MsixPackagingToolTemplate>

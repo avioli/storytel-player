@@ -1,0 +1,50 @@
+version: '3'
+
+# Wails build tasks, adapted from the `wails3 init -t react` template for this
+# repo's layout: the frontend lives in client/ (kept as-is to ease merging
+# upstream) and the Go module lives in server/. Run them through the Wails
+# CLI: `wails3 dev`, `wails3 build`, `wails3 package`, `wails3 task <name>`.
+
+vars:
+  APP_NAME: "storytel-player"       # binary name
+  PRODUCT_NAME: "Storytel Player"   # macOS bundle / DMG name
+  BIN_DIR: "bin"                    # relative to the repo root
+  FRONTEND_DIR: "client"
+  GO_DIR: "server"
+  VITE_PORT: '{{.WAILS_VITE_PORT | default 9245}}'
+  # Target OS for build/package/run. Defaults to the host OS, and is overridden
+  # by `wails3 build GOOS=...` (or the GOOS env var) for cross-compilation.
+  GOOS: '{{.GOOS | default OS}}'
+
+includes:
+  common: ./build/Taskfile.yml
+  windows: ./build/windows/Taskfile.yml
+  darwin: ./build/darwin/Taskfile.yml
+  linux: ./build/linux/Taskfile.yml
+
+tasks:
+  build:
+    summary: Builds the application
+    cmds:
+      - task: "{{.GOOS}}:build"
+
+  package:
+    summary: Packages a production build of the application
+    cmds:
+      - task: "{{.GOOS}}:package"
+
+  run:
+    summary: Runs the application
+    cmds:
+      - task: "{{.GOOS}}:run"
+
+  dev:
+    summary: Runs the application in development mode
+    cmds:
+      - wails3 dev -config ./build/config.yml -port {{.VITE_PORT}}
+
+  test:
+    summary: Runs the Go unit tests
+    dir: '{{.GO_DIR}}'
+    cmds:
+      - go test ./...
