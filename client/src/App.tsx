@@ -4,7 +4,6 @@ import {
   Route,
   Navigate,
   MemoryRouter,
-  BrowserRouter,
   useLocation,
   useSearchParams,
 } from "react-router-dom";
@@ -23,10 +22,6 @@ import TopBar from "./components/TopBar";
 import PlayerBar from "./components/PlayerBar";
 import SearchView from "./components/SearchView";
 import { AudioProvider } from "./contexts/AudioContext";
-
-const useMemoryRouter =
-  import.meta.env.VITE_REACT_APP_USE_MEMORY_ROUTER === "true";
-const Router = useMemoryRouter ? MemoryRouter : BrowserRouter;
 
 function AuthenticatedLayout({
   children,
@@ -197,7 +192,7 @@ function App() {
   }
 
   return (
-    <Router>
+    <MemoryRouter>
       <AudioProvider>
         {isAuthenticated ? (
           <AuthenticatedLayout
@@ -258,7 +253,7 @@ function App() {
           </div>
         )}
       </AudioProvider>
-    </Router>
+    </MemoryRouter>
   );
 }
 

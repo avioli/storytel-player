@@ -124,9 +124,7 @@ npm run install-all   # install frontend dependencies
 npm run dev           # build the frontend, then run the app with `go run`
 ```
 
-There is no hot reload yet: rerun `npm run dev` after changes. To work on the UI
-alone, `npm run client` starts the Vite dev server on port 3000, but it needs a
-backend on `VITE_BACKEND_API_URL` (see `client/.env`).
+There is no hot reload yet: rerun `npm run dev` after changes.
 
 ## Building
 
@@ -151,7 +149,6 @@ npm run test:smoke    # live Storytel requests with an existing login token
 |---------|-------------|
 | `npm run install-all` | Install frontend dependencies |
 | `npm run dev` | Build the frontend and run the app |
-| `npm run client` | Run the Vite dev server only |
 | `npm run build` | Build the frontend into `server/frontend/` |
 | `npm run dist:mac` | Build the macOS app bundle |
 | `npm test` | Run the Go unit tests |

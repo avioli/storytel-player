@@ -1,22 +1,16 @@
 import storage from "./storage";
-import {isWails} from "../platform/wails";
-import axios, {AxiosInstance, AxiosRequestConfig} from "axios";
+import axios from "axios";
 
-declare global {
-    interface Window {
-        electronApi?: any;
-    }
-}
-
-const axiosApi = axios.create({
-    baseURL: `${import.meta.env.VITE_BACKEND_API_URL ?? ""}/api`,
+// The Go backend serves /api/* on the app's own origin (see server/api.go).
+const api = axios.create({
+    baseURL: "/api",
     withCredentials: true,
-    // Downloads hold the request open until the file is complete, so the
-    // desktop build (served in-process, like the old IPC path) has no timeout.
-    timeout: isWails ? 0 : 30000
+    // Downloads hold the request open until the file is complete, so there
+    // is no timeout (the request never leaves the process).
+    timeout: 0
 });
 
-axiosApi.interceptors.request.use(async (config) => {
+api.interceptors.request.use(async (config) => {
     const token = await storage.get("token");
     if (token) {
         config.headers.Authorization = `Bearer ${token}`;
@@ -24,7 +18,7 @@ axiosApi.interceptors.request.use(async (config) => {
     return config;
 });
 
-axiosApi.interceptors.response.use(
+api.interceptors.response.use(
     (response) => response,
     (error) => {
         const hadToken = !!error.config?.headers?.Authorization;
@@ -34,43 +28,6 @@ axiosApi.interceptors.response.use(
         return Promise.reject(error);
     }
 );
-
-const api: AxiosInstance = new Proxy(axiosApi, {
-    get(target, prop: string) {
-        if (!window.electronApi) return (target as any)[prop];
-
-        if (["get", "post", "put", "delete", "request"].includes(prop)) {
-            return async (url: string, dataOrConfig?: any, config?: AxiosRequestConfig) => {
-                const token = await storage.get("token");
-                const headers = { ...(config?.headers || {}), ...(token ? { Authorization: `Bearer ${token}` } : {}) };
-                const data = prop === "get" || prop === "delete" ? null : dataOrConfig;
-                const finalConfig = { ...config, headers };
-                return window.electronApi[prop](`/api${url}`, data, finalConfig).then((result: any) => {
-                    if (result?.__isError) {
-                        const hadToken = !!finalConfig.headers?.Authorization;
-                        if (result.statusCode === 401 && hadToken && !url.includes('/login')) {
-                            window.dispatchEvent(new Event('unauthorized'));
-                        }
-                        const err: any = new Error(result.error);
-                        err.response = { status: result.statusCode, data: result.data };
-                        return Promise.reject(err);
-                    }
-                    return result;
-                }).catch((error: any) => {
-                    // Fallback for unexpected IPC/network errors
-                    const hadToken = !!finalConfig.headers?.Authorization;
-                    const status = error?.response?.status ?? error?.status ?? error?.statusCode;
-                    if (status === 401 && hadToken && !url.includes('/login')) {
-                        window.dispatchEvent(new Event('unauthorized'));
-                    }
-                    return Promise.reject(error);
-                });
-            };
-        }
-
-        return (target as any)[prop];
-    },
-});
 
 export default api;
 

@@ -20,10 +20,7 @@
     "web-vitals": "^2.1.4"
   },
   "scripts": {
-    "start": "vite",
-    "build": "tsc && cross-env VITE_REACT_APP_USE_MEMORY_ROUTER=true vite build",
-    "preview": "vite preview",
-    "build:wails": "tsc && vite build --mode wails --outDir ../server/frontend --emptyOutDir"
+    "build": "tsc && vite build --outDir ../server/frontend --emptyOutDir"
   },
   "eslintConfig": {
     "extends": [
@@ -49,7 +46,6 @@
     "@types/react-dom": "^19.1.9",
     "autoprefixer": "^10.4.14",
     "baseline-browser-mapping": "^2.10.0",
-    "cross-env": "^10.1.0",
     "postcss": "^8.4.21",
     "tailwindcss": "^3.2.7",
     "typescript": "^5.9.2",

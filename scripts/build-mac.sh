@@ -7,7 +7,7 @@ APP_NAME="Storytel Player"
 VERSION=$(node -p "require('./package.json').version")
 OUT="build/bin/${APP_NAME}.app"
 
-(cd client && npm install --no-audit --no-fund && npm run build:wails)
+(cd client && npm install --no-audit --no-fund && npm run build)
 
 # Wails' darwin objects target macOS 15; match it to avoid linker warnings.
 export MACOSX_DEPLOYMENT_TARGET=15.0

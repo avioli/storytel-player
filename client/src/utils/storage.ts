@@ -1,39 +1,17 @@
+import {StorageType} from "../interfaces/helper";
+
 declare global {
     interface Window {
         electronStore?: StorageType;
     }
 }
 
-import {StorageType} from "../interfaces/helper";
-
-let isElectron = false;
-
-try {
-    isElectron = !!window.electronStore
-} catch (e) {
-    isElectron = false;
-}
-
-let storage : StorageType;
-
-if (isElectron) {
-    storage = {
-        get: async (key : string ) => await window.electronStore!.get(key),
-        set: async (key : string, value : any) => await window.electronStore!.set(key, value),
-        remove: async (key : any) => await window.electronStore!.remove(key),
-    };
-} else {
-    storage = {
-        get: async (key: string) => {
-            return localStorage.getItem(key);
-        },
-        set: async (key: string, value: any) => {
-            return localStorage.setItem(key, value);
-        },
-        remove: async (key: any) => {
-            return localStorage.removeItem(key);
-        },
-    };
-}
+// Persistent key/value store backed by the Go side (server/store.go), via the
+// bridge installed by platform/wails.ts.
+const storage: StorageType = {
+    get: (key: string) => window.electronStore!.get(key),
+    set: (key: string, value: any) => window.electronStore!.set(key, value),
+    remove: (key: string) => window.electronStore!.remove(key),
+};
 
 export default storage;

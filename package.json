@@ -9,8 +9,7 @@
   },
   "homepage": "./",
   "scripts": {
-    "client": "cd client && npm install && npm start",
-    "build": "cd client && npm run build:wails",
+    "build": "cd client && npm run build",
     "install-all": "cd client && npm install",
     "test": "cd server && go test ./...",
     "test:smoke": "cd server && go test -tags smoke -run Smoke -v .",
