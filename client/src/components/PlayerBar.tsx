@@ -83,10 +83,10 @@ export function PlayerBar() {
   const speeds = [0.75, 1.0, 1.25, 1.5, 1.75, 2.0];
   const sleepOptions: { label: string; value: number | 'chapter' | null }[] = [
     { label: t('player.off', 'Off'), value: null },
-    { label: '15 min', value: 15 },
-    { label: '30 min', value: 30 },
-    { label: '45 min', value: 45 },
-    { label: '60 min', value: 60 },
+    { label: `15 ${t('player.timeUnits.minutes')}`, value: 15 },
+    { label: `30 ${t('player.timeUnits.minutes')}`, value: 30 },
+    { label: `45 ${t('player.timeUnits.minutes')}`, value: 45 },
+    { label: `60 ${t('player.timeUnits.minutes')}`, value: 60 },
     { label: t('player.endOfChapter', 'End of chapter'), value: 'chapter' },
   ];
 

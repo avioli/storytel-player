@@ -178,7 +178,7 @@ function BookView() {
     const formatDuration = (microseconds: number) => {
         const hours = Math.floor(microseconds / 3600000000);
         const minutes = Math.floor((microseconds % 3600000000) / 60000000);
-        return `${hours} h ${minutes} min`;
+        return `${hours} ${t('search.hours')} ${minutes} ${t('search.minutes')}`;
     };
 
     const getTruncatedDescription = () => {
