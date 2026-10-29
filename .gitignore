@@ -24,3 +24,5 @@ server/frontend
 .task/
 # Screenshot harness output
 client/screenshots/out/
+# Local scratch files
+/tmp/
