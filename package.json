@@ -15,6 +15,7 @@
     "test": "cd server && go test ./...",
     "install-all": "cd client && npm install",
     "test:smoke": "cd server && go test -tags smoke -run Smoke -v .",
+    "screenshots": "cd client && npm run screenshots --",
     "version": "node scripts/sync-version.mjs && conventional-changelog -p angular -i CHANGELOG.md && git add -A README.md CHANGELOG.md server/main.go build",
     "version:check": "node scripts/sync-version.mjs --check"
   },

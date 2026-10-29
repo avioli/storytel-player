@@ -71,6 +71,30 @@ npm test              # Go unit tests
 npm run test:smoke    # live Storytel requests with an existing login token
 ```
 
+### Screenshots
+
+```bash
+npm run screenshots                     # every language, every scene
+npm run screenshots -- bg               # one language
+npm run screenshots -- --scenes=player  # one scene file
+```
+
+This runs the frontend in headless Chromium (Playwright) against a mock
+backend with a fictional library, so it needs no Storytel account, and saves
+each screen and dialog in each language under `client/screenshots/out/`
+(ignored by git). Use it to check translations in context. The first run may
+need `npx playwright install chromium` in `client/`.
+
+- `client/screenshots/scenes/`: one file per area of the app (login, library,
+  book, player, search, settings). Scenes find buttons by their translated
+  text, so they work in every language.
+- `client/screenshots/mock-backend.ts`: answers `/api/*` and `/native/*` like
+  the Go backend, with the real translations from `server/locales/`.
+- `client/screenshots/fixtures.ts`: the books, bookmarks and logs it serves.
+
+Chromium is not the app's webview (WKWebView on macOS), so fonts and small
+details can differ slightly.
+
 ## Building
 
 ```bash
@@ -178,3 +202,4 @@ and copy them from its `build/darwin/`, or take them from
 | `npm run package` | `wails3 package`: build the app bundle or installer |
 | `npm test` | Run the Go unit tests |
 | `npm run test:smoke` | Run the live smoke test |
+| `npm run screenshots` | Capture every screen in every language (see above) |

@@ -22,3 +22,5 @@ server/frontend
 /build/**/.DS_Store
 # Task cache
 .task/
+# Screenshot harness output
+client/screenshots/out/
