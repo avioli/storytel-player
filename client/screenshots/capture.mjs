@@ -85,6 +85,9 @@ async function capture(base, browser, lang, t, area, index, scene) {
   }
 }
 
+// Vite 7 exits when stdin closes unless CI is set (it takes that as the parent
+// process going away), which kills runs from scripts and editors.
+process.env.CI ??= 'true';
 const server = await createServer({ configFile: resolve(here, 'vite.config.ts') });
 await server.listen();
 const base = server.resolvedUrls.local[0];
