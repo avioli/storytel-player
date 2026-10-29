@@ -34,6 +34,7 @@ export const APP_LANGUAGES: readonly AppLanguage[] = [
     {code: 'it', nativeName: 'Italiano'},
     {code: 'fi', nativeName: 'Suomi'},
     {code: 'sv', nativeName: 'Svenska'},
+    {code: 'bg', nativeName: 'Български'},
 ];
 
 export const SUPPORTED_LANGUAGE_CODES: readonly string[] = APP_LANGUAGES.map((l) => l.code);

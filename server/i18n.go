@@ -18,7 +18,7 @@ import (
 var localeFS embed.FS
 
 // Adding a language? Also update client/src/config/languages.ts.
-var supportedLanguages = []string{"de", "en", "es", "fr", "it", "fi", "sv"}
+var supportedLanguages = []string{"de", "en", "es", "fr", "it", "fi", "sv", "bg"}
 
 const autoLanguage = "auto"
 const fallbackLanguage = "en"

@@ -1,0 +1,299 @@
+{
+  "login": {
+    "title": "Вход в Storytel",
+    "subtitle": "Достъп до библиотеката ви с аудиокниги",
+    "email": "Имейл адрес",
+    "password": "Парола",
+    "signIn": "Вход",
+    "signingIn": "Влизане...",
+    "ssoDivider": "или",
+    "ssoGoogle": "Продължете с Google",
+    "ssoApple": "Продължете с Apple",
+    "ssoOpening": "Отваряне на входа в Storytel...",
+    "errors": {
+      "required": "Въведете имейл и парола",
+      "failed": "Неуспешен вход",
+      "sessionExpired": "Сесията ви изтече. Моля, влезте отново."
+    }
+  },
+  "dashboard": {
+    "title": "Моята библиотека",
+    "bookCount_one": "{{count}} книга",
+    "bookCount_other": "{{count}} книги",
+    "logout": "Изход",
+    "settings": "Настройки",
+    "search": "Търсене в библиотеката...",
+    "searchCatalogPrompt": "Търсене в каталога на Storytel",
+    "exploreCatalog": "Разгледайте каталога (⌘K)",
+    "noBooks": "Няма намерени книги",
+    "emptyLibrary": "Библиотеката ви изглежда празна.",
+    "noFilterMatch": "Няма книги, отговарящи на филтъра.",
+    "resetFilters": "Изчистване на филтрите",
+    "loading": "Зареждане на библиотеката...",
+    "loadError": "Библиотеката не можа да се зареди",
+    "filters": {
+      "all": "Всички",
+      "notStarted": "Незапочнати",
+      "started": "Започнати",
+      "concluded": "Завършени"
+    }
+  },
+  "player": {
+    "chapters": "Глави",
+    "bookmarks": "Отметки",
+    "addBookmark": "Добавяне на отметка",
+    "speed": "Скорост",
+    "skipBackward": "-{{seconds}} секунди",
+    "skipForward": "+{{seconds}} секунди",
+    "goTo": "Към",
+    "goto": "Към момент",
+    "playing": "Възпроизвежда се",
+    "paused": "На пауза",
+    "nowPlaying": "Сега слушате:",
+    "loadingAudio": "Зареждане на аудиото...",
+    "loadingBookData": "Зареждане на данните за книгата...",
+    "loadError": "Аудиопотокът не можа да се зареди",
+    "loadChaptersError": "Главите не можаха да се заредят",
+    "loadBookmarksError": "Отметките не можаха да се заредят",
+    "sleepTimer": "Таймер за заспиване",
+    "endOfChapter": "Край на главата",
+    "off": "Изключен",
+    "expand": "Отваряне на плейъра",
+    "volume": "Сила на звука",
+    "chapterOf": "Глава {{current}} от {{total}}",
+    "timeUnits": {
+      "hours": "ч",
+      "minutes": "мин",
+      "seconds": "с"
+    }
+  },
+  "bookmarks": {
+    "title": "Вашите отметки",
+    "noBookmarks": "Няма запазени отметки",
+    "createNew": "Нова отметка",
+    "createTitle": "Нова отметка",
+    "editTitle": "Редактиране на отметка",
+    "deleteTitle": "Изтриване на отметка",
+    "deleteConfirm": "Сигурни ли сте, че искате да изтриете тази отметка?",
+    "deleteWarning": "Това действие не може да бъде отменено.",
+    "currentPosition": "Текуща позиция:",
+    "position": "Позиция:",
+    "note": "Бележка",
+    "noteOptional": "Бележка (по избор)",
+    "notePlaceholderCreate": "Добавете бележка към отметката...",
+    "notePlaceholderEdit": "Редактирайте бележката към отметката...",
+    "save": "Запази",
+    "saveChanges": "Запази",
+    "tooltipEdit": "Редактиране на отметката",
+    "tooltipDelete": "Изтриване на отметката"
+  },
+  "errorState": {
+    "title": "Нещо се обърка",
+    "tryAgain": "Опитайте отново",
+    "logoutHint": "Ако проблемът продължава, излезте от профила си",
+    "logout": "Изход"
+  },
+  "common": {
+    "loading": "Зареждане...",
+    "error": "Грешка",
+    "cancel": "Отказ",
+    "save": "Запазване",
+    "saving": "Запазване...",
+    "delete": "Изтриване",
+    "close": "Затваряне"
+  },
+  "bookCard": {
+    "completed": "Завършена",
+    "remaining": "остават",
+    "author": "Автор:",
+    "narrator": "Чете:"
+  },
+  "bookshelf": {
+    "remove": "Премахване от библиотеката",
+    "removeTitle": "Премахване на книгата?",
+    "removeMessage": "„{{title}}“ ще бъде премахната от библиотеката ви в Storytel. Можете да я добавите отново чрез търсенето по всяко време.",
+    "removeConfirm": "Премахване",
+    "removed": "Премахната от библиотеката",
+    "errors": {
+      "removeFailed": "Книгата не можа да бъде премахната от библиотеката.",
+      "removeNotConfirmed": "Storytel прие заявката, но книгата все още е в библиотеката ви."
+    }
+  },
+  "bookView": {
+    "saved": "Запазена",
+    "addToLibrary": "Добави",
+    "inLibrary": "В библиотеката",
+    "savedToLibrary": "Книгата е добавена в библиотеката!",
+    "listen": "Слушане",
+    "language": "Език",
+    "duration": "Продължителност",
+    "narrator": "Чете",
+    "category": "Категория",
+    "description": "Описание",
+    "noDescription": "Няма описание.",
+    "showMore": "покажи още",
+    "showLess": "покажи по-малко",
+    "details": "Подробности за книгата:",
+    "loadError": "Подробностите за книгата не можаха да се заредят"
+  },
+  "chapters": {
+    "title": "Аудиозаписи и глави",
+    "noChapters": "Няма налични записи",
+    "chapter": "Глава",
+    "track": "Запис",
+    "tracks": "Записи"
+  },
+  "gotoModal": {
+    "title": "Към момент",
+    "description": "Въведете желания момент (при скорост {{speed}}x)",
+    "hours": "Часове",
+    "minutes": "Мин",
+    "seconds": "Сек",
+    "cancel": "Отказ",
+    "go": "Напред"
+  },
+  "playbackSpeed": {
+    "title": "Скорост на възпроизвеждане",
+    "presets": "Готови скорости",
+    "custom": "Друга скорост",
+    "confirm": "Потвърждаване"
+  },
+  "tray": {
+    "noBookPlaying": "В момента не се слуша книга",
+    "showApp": "Показване на приложението",
+    "play": "Пускане",
+    "pause": "Пауза",
+    "playPause": "Пускане/пауза",
+    "playbackSpeed": "Скорост на възпроизвеждане",
+    "about": "Относно",
+    "help": "Помощ",
+    "logout": "Изход",
+    "quit": "Затваряне"
+  },
+  "logout": {
+    "confirmTitle": "Потвърждаване на изхода",
+    "confirmMessage": "Сигурни ли сте, че искате да излезете?",
+    "confirmButton": "Изход",
+    "cancelButton": "Отказ"
+  },
+  "download": {
+    "cancelTitle": "Отказ от изтеглянето",
+    "cancelMessage": "Сигурни ли сте, че искате да прекратите текущото изтегляне?",
+    "cancelWarning": "Частично изтегленият файл ще бъде изтрит.",
+    "cancelButton": "Прекратяване",
+    "continueButton": "Продължаване",
+    "deleteTitle": "Изтриване на изтегления файл",
+    "deleteMessage": "Сигурни ли сте, че искате да изтриете изтегления файл?",
+    "deleteWarning": "Ще трябва да го изтеглите отново, за да слушате офлайн.",
+    "deleteButton": "Изтрий",
+    "keepButton": "Запази",
+    "failed": "Изтеглянето не бе успешно",
+    "operationFailed": "Изтегленият файл не можа да бъде обновен"
+  },
+  "updater": {
+    "available": {
+      "title": "Налична е нова версия",
+      "message": "Налична е нова версия:",
+      "download": "Изтегляне",
+      "later": "По-късно"
+    },
+    "ready": {
+      "title": "Обновяването е готово",
+      "message": "Обновяването е изтеглено. Рестартирайте, за да инсталирате версия:",
+      "restart": "Рестартиране",
+      "later": "По-късно"
+    }
+  },
+  "welcome": {
+    "title": "Добре дошли в Storytel Player!",
+    "message": "Благодарим ви, че използвате Storytel Player – настолно приложение с отворен код за вашите аудиокниги. Присъединете се към общността ни, за да научавате новостите и да споделяте мнение!",
+    "starGithub": "Звезда в GitHub",
+    "joinDiscord": "Към Discord",
+    "getStarted": "Да започваме"
+  },
+  "settings": {
+    "title": "Настройки",
+    "community": "Общност",
+    "githubRepo": "Хранилище в GitHub",
+    "discordCommunity": "Към Discord",
+    "appearance": "Изглед",
+    "alwaysOnTop": "Прозорецът винаги отгоре",
+    "alwaysOnTopDescription": "Прозорецът ще остава над останалите прозорци",
+    "account": "Профил",
+    "email": "Имейл",
+    "logout": "Изход",
+    "developer": "За разработчици",
+    "viewLogs": "Преглед на дневника на сесията",
+    "language": "Език",
+    "languageAuto": "Автоматично"
+  },
+  "language": {
+    "title": "Език",
+    "subtitle": "Изберете езика на интерфейса на приложението.",
+    "auto": "Автоматично",
+    "autoDescription": "Според езика на системата",
+    "autoResolved": "Според системата · {{language}}",
+    "systemPreference": "Езици на системата: {{languages}}",
+    "change": "Смяна на езика ({{language}})",
+    "catalogNote": "Това променя само интерфейса на приложението. Кои книги можете да намерите и на кои езици зависи от държавата на профила ви в Storytel."
+  },
+  "logs": {
+    "title": "Дневник на приложението",
+    "refresh": "Опресняване",
+    "clear": "Изчистване",
+    "empty": "Дневникът е празен.",
+    "export": "Експортиране",
+    "search": "Търсене в дневника...",
+    "typeAll": "Всички събития",
+    "typeError": "Грешки",
+    "typeHttp": "HTTP трафик",
+    "typeAction": "Действия на потребителя",
+    "confirmClear": "Сигурни ли сте, че искате да изчистите целия дневник? Това не може да бъде отменено.",
+    "details": "Подробности"
+  },
+  "floatingMenu": {
+    "library": "Библиотека",
+    "search": "Търсене в каталога на Storytel",
+    "player": "Плейър",
+    "settings": "Настройки",
+    "dockLabel": "Плаваща навигационна лента"
+  },
+  "search": {
+    "title": "Търсене в Storytel",
+    "placeholder": "Търсене по заглавие, автор или четец...",
+    "results": "Резултати от търсенето",
+    "hitCount_one": "{{count}} резултат",
+    "hitCount_other": "{{count}} резултата",
+    "hitCountFiltered": "{{count}} от {{total}} резултата",
+    "sortLabel": "Подреждане:",
+    "sortRelevance": "Най-подходящи",
+    "sortTitle": "Заглавие (А–Я)",
+    "sortDuration": "Най-дългите първо",
+    "noResults": "Няма намерени книги за",
+    "searching": "Търсене...",
+    "initialPrompt": "Започнете да пишете, за да търсите в богатия каталог с аудиокниги на Storytel",
+    "selectBookHint": "Изберете книга за преглед",
+    "play": "Пускане",
+    "details": "Подробности",
+    "addToBookshelf": "Добави",
+    "addedToBookshelf": "Добавена в библиотеката",
+    "audiobook": "Аудиокнига",
+    "ebook": "Е-книга",
+    "hours": "ч",
+    "minutes": "мин",
+    "shortcut": "Натиснете ⌘K / Ctrl+K по всяко време",
+    "allLanguages": "Всички",
+    "filterByLanguage": "Език",
+    "filterByLength": "Продължителност",
+    "allLengths": "Всички",
+    "autoFilterHint": "Предварително са избрани езиците, на които четете. Изберете „Всички“, за да видите всички резултати.",
+    "noResultsHint": "Проверете правописа или опитайте с друга дума",
+    "noResultsInLanguages": "Няма резултати на {{languages}}.",
+    "noFilterMatch": "Няма съвпадения с избраните филтри",
+    "showAllLanguages": "Показване на всички езици ({{total}})",
+    "errors": {
+      "addToBookshelfFailed": "Книгата не можа да бъде добавена в библиотеката. Възможно е да не е достъпна в региона на профила ви.",
+      "addToBookshelfNotConfirmed": "Storytel прие заявката, но книгата не се появи в библиотеката ви. Възможно е да не е включена в абонамента ви."
+    }
+  }
+}
