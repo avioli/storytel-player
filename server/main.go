@@ -28,7 +28,7 @@ var clientBuild embed.FS
 //go:embed assets/icon.png assets/tray-icon.png assets/tray-icon-mac@2x.png
 var assetFS embed.FS
 
-const appVersion = "1.4.1"
+const appVersion = "1.5.0"
 
 type App struct {
 	app      *application.App

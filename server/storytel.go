@@ -302,16 +302,20 @@ func (c *StorytelClient) do(o reqOpts) (*response, error) {
 		} else {
 			rerr = errors.New("no credentials")
 		}
-		if rerr == nil {
+		// Propagate renewal and retry errors instead of replacing them with
+		// the original 401, which would force logout even for an access denial.
+		if rerr != nil && bearer == "" && c.sso == nil && (c.email == "" || c.encPassword == "") {
+			// No credentials to renew with: fall through to the 401.
+		} else if rerr != nil {
+			return r, rerr
+		} else {
 			h := map[string]string{}
 			for k, v := range o.headers {
 				h[k] = v
 			}
 			h["Authorization"] = "Bearer " + bearer
 			o.headers = h
-			if rr, err := c.do(o); err == nil {
-				return rr, nil
-			}
+			return c.do(o)
 		}
 	}
 
@@ -1076,7 +1080,9 @@ func redirectTarget(r *response, err error, prefix string) (string, error) {
 		if errors.As(err, &ae) && ae.Location != "" {
 			return ae.Location, nil
 		}
-		return "", errors.New(prefix + err.Error())
+		// Keep the upstream status so the route can answer 403 for an access
+		// denial instead of a generic 500.
+		return "", &APIError{Status: statusOf(err), Message: prefix + err.Error()}
 	}
 	return r.headers.Get("Location"), nil
 }

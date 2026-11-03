@@ -1,6 +1,6 @@
 {
   "name": "storytel-player",
-  "version": "1.4.1",
+  "version": "1.5.0",
   "email": "andrea@debbaweb.it",
   "description": "Storytel Unofficial Player - Storytel audiobook player for desktop",
   "repository": {
@@ -12,7 +12,7 @@
     "dev": "wails3 dev",
     "build": "wails3 build",
     "package": "wails3 package",
-    "test": "cd server && go test ./...",
+    "test": "cd server && go test ./... && cd ../client && npm test",
     "install-all": "cd client && npm install",
     "test:smoke": "cd server && go test -tags smoke -run Smoke -v .",
     "screenshots": "cd client && npm run screenshots --",

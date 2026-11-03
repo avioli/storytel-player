@@ -10,7 +10,7 @@
   <Identity 
     Name="com.storytel.player.wails"
     Publisher="CN=debba"
-    Version="1.4.1.0" 
+    Version="1.5.0.0" 
     ProcessorArchitecture="arm64" />
   
   <Properties>

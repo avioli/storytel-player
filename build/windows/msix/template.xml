@@ -17,7 +17,7 @@
         PackageDisplayName="Storytel Player"
         PublisherName="CN=debba"
         PublisherDisplayName="debba"
-        Version="1.4.1.0"
+        Version="1.5.0.0"
         PackageDescription="Storytel audiobook player for desktop">
         <Capabilities>
             <Capability Name="runFullTrust" />

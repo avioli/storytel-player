@@ -11,8 +11,11 @@ const call = async (method: string, path: string, body?: unknown): Promise<any> 
     return res.json();
 };
 
-const onNative = (name: string, callback: (detail: any) => void): void => {
-    window.addEventListener(`native:${name}`, (e) => callback((e as CustomEvent).detail));
+// Returns an unsubscribe function.
+const onNative = (name: string, callback: (detail: any) => void): (() => void) => {
+    const listener = (e: Event) => callback((e as CustomEvent).detail);
+    window.addEventListener(`native:${name}`, listener);
+    return () => window.removeEventListener(`native:${name}`, listener);
 };
 
 window.electronStore = {
