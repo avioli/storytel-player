@@ -22,6 +22,7 @@ storytel-player/
 |   |   |-- services/    # API services
 |   |   |-- utils/       # Utility functions
 |   |   `-- i18n.ts      # i18next configuration
+|   |-- screenshots/     # Screenshot harness: mock backend, fixtures, scenes
 |   `-- package.json
 |-- server/          # Go module: Wails desktop app + backend
 |   |-- main.go          # Wails entry: window, tray, /native/* bridge
@@ -34,8 +35,9 @@ storytel-player/
 |   |-- assets/          # App and tray icons (embedded)
 |   `-- frontend/        # Vite build output (generated, gitignored)
 |-- build/           # Wails build config (config.yml) and per-OS packaging
+|   `-- darwin/AppIcon.icon  # macOS icon source (Icon Composer)
 |-- Taskfile.yml     # Wails tasks; FRONTEND_DIR/GO_DIR point at client/server
-|-- scripts/         # release helpers
+|-- scripts/         # sync-version.mjs, make-macos-icon.sh
 `-- package.json     # Root package.json (npm script shortcuts)
 ```
 
@@ -57,8 +59,7 @@ storytel-player/
 #### Translation System
 - **Location**: Translation files are in `server/locales/`
   - `server/locales/en.json` - English translations (default)
-  - `server/locales/it.json` - Italian translations
-  - Add more languages as needed
+  - One file per language (`it.json`, `bg.json`, ...), all with the same keys
 
 - **Usage in Frontend**:
   ```typescript
@@ -70,11 +71,9 @@ storytel-player/
   }
   ```
 
-- **Usage in Backend**:
-  ```typescript
-  // Server automatically provides translations via API
-  // Use i18next instance configured in server
-  ```
+- **Usage in Backend**: the Go side serves the locale files to the frontend
+  (`/api/translations`) and uses them itself only for native text such as
+  the tray menu (`T()` in `server/i18n.go`).
 
 - **Adding New Translations**:
   1. Add the key to `server/locales/en.json`
@@ -87,6 +86,9 @@ storytel-player/
   1. `server/locales/<code>.json` - full key parity with `en.json`
   2. `server/i18n.go` - add the code to `supportedLanguages`
   3. `client/src/config/languages.ts` - add code + endonym to `APP_LANGUAGES`
+
+  Then check the new language in context with `npm run screenshots -- <code>`
+  (see Testing Strategy).
 
 - **UI Language vs. Catalog Language**: they are unrelated and must not be
   conflated. The UI language is the user's own choice (or their OS locale);
@@ -126,14 +128,45 @@ storytel-player/
 3. **Build**: `wails3 build` (binary in `bin/`)
 4. **Package**: `wails3 package` (outputs `bin/Storytel Player.app` on macOS)
 5. **Tests**: `npm test` (Go unit tests), `npm run test:smoke` (live Storytel, needs a login)
+6. **Screenshots**: `npm run screenshots` (see Testing Strategy)
+7. **Version bump**: `npm version <x>`; `package.json` is the only place to
+   change it, `scripts/sync-version.mjs` copies it everywhere else
+   (`npm run version:check` reports drift)
+8. **macOS icon**: edit `build/darwin/AppIcon.icon`, then run
+   `scripts/make-macos-icon.sh` (Xcode 26+, ImageMagick); both outputs are
+   committed
+
+More detail for all of these is in DEVELOPMENT.md.
 
 ### Testing Strategy
 
 - Go unit tests (`npm test`) and a live smoke test (`npm run test:smoke`)
 - Manual testing of the app
 - Test across platforms (Windows, macOS, Linux)
-- Verify i18n translations for all supported languages
 - Test both online and offline modes
+
+#### Screenshot harness: use it selectively
+
+`npm run screenshots` renders the frontend in headless Chromium against a mock
+backend (fictional data, real locale files) and saves each screen and dialog
+under `client/screenshots/out/<lang>/<area>/` (git-ignored). A full run covers
+every language and scene and takes minutes, so do not run it by default.
+
+- **Run it, narrowed, and look at the images** when the change is visual or
+  textual in a way a type check cannot catch: new or reworded translations,
+  a new language, layout or styling changes, or a reported visual issue.
+  Narrow it to what changed: `npm run screenshots -- bg` (one language),
+  `npm run screenshots -- --scenes=player` (one area), or both.
+- **Do not run it** for logic, backend, build or docs changes, or for small
+  UI tweaks whose effect is obvious from the code. Instead, end with a short
+  note telling the user what to check by eye in the running app (for example
+  "open the player and check the sleep timer menu").
+- When a change adds a screen or dialog, add a scene for it in
+  `client/screenshots/scenes/` (find buttons by translated text via `t()`)
+  and, if needed, fixture data in `fixtures.ts` or a scenario option in
+  `mock-backend.ts`.
+- Screenshots never go into the repo. Chromium is not the app's webview
+  (WKWebView on macOS), so fonts and small details can differ.
 
 ## Project-Specific Patterns
 
